@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ChuzufangDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.yonghu_id as yonghuId
+        ,a.chuzufang_name as chuzufangName
+        ,a.mianji as mianji
+        ,a.chuzufang_photo as chuzufangPhoto
+        ,a.chuzufang_types as chuzufangTypes
+        ,a.chuzufang_old_money as chuzufangOldMoney
+        ,a.chuzufang_new_money as chuzufangNewMoney
+        ,a.chuzufang_clicknum as chuzufangClicknum
+        ,a.shangxia_types as shangxiaTypes
+        ,a.chuzufang_content as chuzufangContent
+        ,a.chuzufang_delete as chuzufangDelete
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ChuzufangView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+
+        FROM chuzufang  a
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test=" params.chuzufangName != '' and params.chuzufangName != null and params.chuzufangName != 'null' ">
+                and a.chuzufang_name like CONCAT('%',#{params.chuzufangName},'%')
+            </if>
+            <if test="params.mianjiStart != null ">
+                <![CDATA[  and a.mianji >= #{params.mianjiStart}   ]]>
+            </if>
+            <if test="params.mianjiEnd != null ">
+                <![CDATA[  and a.mianji <= #{params.mianjiEnd}   ]]>
+            </if>
+            <if test="params.chuzufangTypes != null and params.chuzufangTypes != ''">
+                and a.chuzufang_types = #{params.chuzufangTypes}
+            </if>
+            <if test="params.chuzufangOldMoneyStart != null ">
+                <![CDATA[  and a.chuzufang_old_money >= #{params.chuzufangOldMoneyStart}   ]]>
+            </if>
+            <if test="params.chuzufangOldMoneyEnd != null ">
+                <![CDATA[  and a.chuzufang_old_money <= #{params.chuzufangOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.chuzufangNewMoneyStart != null ">
+                <![CDATA[  and a.chuzufang_new_money >= #{params.chuzufangNewMoneyStart}   ]]>
+            </if>
+            <if test="params.chuzufangNewMoneyEnd != null ">
+                <![CDATA[  and a.chuzufang_new_money <= #{params.chuzufangNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.chuzufangClicknumStart != null and params.chuzufangClicknumStart != ''">
+                <![CDATA[  and a.chuzufang_clicknum >= #{params.chuzufangClicknumStart}   ]]>
+            </if>
+            <if test="params.chuzufangClicknumEnd != null and params.chuzufangClicknumEnd != ''">
+                <![CDATA[  and a.chuzufang_clicknum <= #{params.chuzufangClicknumEnd}   ]]>
+            </if>
+             <if test="params.chuzufangClicknum != null and params.chuzufangClicknum != ''">
+                and a.chuzufang_clicknum = #{params.chuzufangClicknum}
+             </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test=" params.chuzufangContent != '' and params.chuzufangContent != null and params.chuzufangContent != 'null' ">
+                and a.chuzufang_content like CONCAT('%',#{params.chuzufangContent},'%')
+            </if>
+            <if test="params.chuzufangDeleteStart != null and params.chuzufangDeleteStart != ''">
+                <![CDATA[  and a.chuzufang_delete >= #{params.chuzufangDeleteStart}   ]]>
+            </if>
+            <if test="params.chuzufangDeleteEnd != null and params.chuzufangDeleteEnd != ''">
+                <![CDATA[  and a.chuzufang_delete <= #{params.chuzufangDeleteEnd}   ]]>
+            </if>
+             <if test="params.chuzufangDelete != null and params.chuzufangDelete != ''">
+                and a.chuzufang_delete = #{params.chuzufangDelete}
+             </if>
+
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
